@@ -11,7 +11,7 @@ get_data <- function(fx_symbols,from,country){
   fx_data <- tq_get(
     fx_symbols,
     get = "stock.prices",
-    from = "2000-01-01",
+    from = from,
     to = Sys.Date()
   ) %>%
     mutate(
@@ -34,7 +34,6 @@ get_data <- function(fx_symbols,from,country){
     "SL.UEM.TOTL.ZS",    # Unemployment
     "BX.KLT.DINV.CD.WD"  # FDI
   )
-  
   
   # Get marco data
   macro_data <- 
@@ -104,7 +103,8 @@ get_data <- function(fx_symbols,from,country){
       stoch_d = stoch(HLC = select(cur_data(), high, low, close))[, "fastD"]
       
     ) %>%
-    ungroup()
+    ungroup() %>%
+    select(-date.y,-volume)
   
 }
 
