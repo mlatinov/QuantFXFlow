@@ -1,0 +1,51 @@
+---
+title: "EDA Report"
+author: "Metodi Latinov"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: hide
+    theme: cerulean
+    highlight: tango
+    df_print: paged
+params:
+  data: NULL
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+plots <- params$data
+```
+
+# Summary Information
+
+```{r}
+plots$str_plot
+```
+
+# Time Series Plot
+
+```{r}
+plots$plot_tk
+```
+
+# ACF Plot
+
+```{r}
+plots$acf_plot
+```
+
+## Ljung Box Table
+
+```{r}
+plots$ljung_box
+```
+
+# Anomaly Spikes
+
+```{r}
+plots$spike_plot
+```
