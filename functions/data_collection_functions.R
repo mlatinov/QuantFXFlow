@@ -15,6 +15,7 @@ get_data <- function(fx_symbols,from,country){
     to = Sys.Date()
   ) %>%
     mutate(
+      symbol = as.factor(symbol),
       year = year(date),
       close = round(close, 5),
       high  = round(high, 5),
@@ -104,7 +105,8 @@ get_data <- function(fx_symbols,from,country){
       
     ) %>%
     ungroup() %>%
-    select(-date.y,-volume)
+    select(-date.y,-volume) %>%
+    drop_na()
   
 }
 
