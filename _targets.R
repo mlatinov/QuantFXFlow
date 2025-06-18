@@ -14,6 +14,7 @@ library(TTR)
 
 # Modeling
 library(modeltime)
+library(modeltime.gluonts)
 library(modeltime.ensemble)
 library(tidymodels)
 
@@ -39,7 +40,7 @@ list(
         )
     ),
   
-  # EDA
+  #### EDA ####
   tar_target(
     name = diagnostics,
     command = 
@@ -50,8 +51,82 @@ list(
   tar_render(
     eda_report,
     path = "documents/eda_tk.Rmd",
-    params = list(
-      data = diagnostics
+    params = list(data = diagnostics)
+  ),
+  
+  #### Future data for forecast ####
+  tar_target(
+    name = future_data,
+    command = 
+      data_raw %>%
+      group_by(symbol) %>%
+      future_frame(
+        .date_var = date.x,
+        .length_out = 30
+        )
+    ),
+  
+  #### Train / Test split #### 
+  tar_target(
+    name = split,
+    command = 
+      time_series_split(
+        data = data_raw,
+        date_var = date.x,
+        assess = 30,
+        cumulative = TRUE
+        )
+    ),
+  
+  #### Modeling ####
+  
+  ###### Model 1 XGB ####
+  tar_target(
+    name = xgb_model,
+    command = xgb_boost_functions(split)
+    ),
+  
+  ###### Model 2 ELASTIC NET ####
+  tar_target(
+    name = elastic_net_model,
+    command = elastic_net_function(split)
+    ),
+  
+  ###### Model 3 MARS ####
+  tar_target(
+    name = mars_model,
+    command = mars_function(split)
+    ),
+  
+  ###### Model 4 DeepAR ####
+  tar_target(
+    name = deep_ar_model,
+    command = deep_ar_function(split)
+    ),
+  
+  ###### Model 5 Gaussian Process (GP) Forecaster ####
+  tar_target(
+    name = gp_model,
+    command = gp_forecaster_function(split)
     )
-  )
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 )
