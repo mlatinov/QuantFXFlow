@@ -13,12 +13,17 @@ output:
     df_print: paged
 params:
   data: NULL
+knit: targets::tar_knit  # Must be at root level
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
 plots <- params$data
 ```
+
 
 # Summary Information
 
