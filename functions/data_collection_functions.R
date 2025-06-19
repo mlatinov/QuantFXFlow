@@ -81,6 +81,8 @@ get_data <- function(fx_symbols,from,country){
       
       # Trend Indicators
       tdi = TDI(price = close, n = 30, multiple = 2),
+      tdi_1 = tdi[,1],
+      tdi_2 = tdi[,2],
       cci = CCI(HLC = select(cur_data(), high, low, close), n = 30),
       adx = ADX(HLC = select(cur_data(), high, low, close), n = 30)[, "ADX"],
       vhf = VHF(price = close, n = 30),
@@ -105,8 +107,9 @@ get_data <- function(fx_symbols,from,country){
       
     ) %>%
     ungroup() %>%
-    select(-date.y,-volume) %>%
-    drop_na()
+    select(-date.y,-volume,-tdi) %>%
+    drop_na() %>%
+    arrange(symbol, date.x)
   
 }
 
