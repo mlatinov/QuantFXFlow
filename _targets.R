@@ -24,6 +24,9 @@ library(DT)
 #### Source Functions 
 tar_source("functions/data_collection_functions.R")
 tar_source("functions/data_eda_function_tk.R")
+tar_source("functions/model_functions.R")
+tar_source("functions/recipe_functions.R")
+tar_source("functions/ensemble_models_functions.R")
 
 #### Workflow #####
 
@@ -68,7 +71,7 @@ list(
   
   #### Train / Test split #### 
   tar_target(
-    name = split,
+    name = splits,
     command = 
       time_series_split(
         data = data_raw,
@@ -83,35 +86,59 @@ list(
   ###### Model 1 XGB ####
   tar_target(
     name = xgb_model,
-    command = xgb_boost_functions(split)
+    command = xgb_boost_functions(splits)
     ),
   
   ###### Model 2 ELASTIC NET ####
   tar_target(
     name = elastic_net_model,
-    command = elastic_net_function(split)
+    command = elastic_net_function(splits)
     ),
   
   ###### Model 3 MARS ####
   tar_target(
     name = mars_model,
-    command = mars_function(split)
+    command = mars_function(splits)
     ),
   
   ###### Model 4 DeepAR ####
   tar_target(
     name = deep_ar_model,
-    command = deep_ar_function(split)
+    command = deep_ar_function(splits)
     ),
   
   ###### Model 5 Gaussian Process (GP) Forecaster ####
   tar_target(
     name = gp_model,
-    command = gp_forecaster_function(split)
+    command = gp_forecaster_function(splits)
+    ),
+  
+  #### Ensemble Models ####
+  
+  ###### Mean Ensemble ####
+  tar_target(
+    name = ensemble_mean,
+    command = mean_ensemble(
+      xgb_model,
+      elastic_net_model,
+      mars_model,
+      deep_ar_model,
+      gp_model
+      )
+    ),
+  
+  ###### Weighted Ensemble ####
+  tar_target(
+    name = ensemble_weighted,
+    command = weighted_ensemble(
+      xgb_model,
+      elastic_net_model,
+      mars_model,
+      deep_ar_model,
+      gp_model,
+      weights = c(1,1,0.5,1.5,1)
+      )
     )
-  
-  
-  
   
   
   
