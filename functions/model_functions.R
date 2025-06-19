@@ -5,10 +5,10 @@
 
 ###### 1 XGB Function ####
 
-xgb_boost_functions <- function(split){
+xgb_boost_functions <- function(splits){
   
   # Recipe 
-  recipe_results <- ml_recipe(split)
+  recipe_results <- ml_recipe(splits)
   
   # Model Spec
   xgb_model <- boost_tree(learn_rate = 0.1) %>%
@@ -19,16 +19,16 @@ xgb_boost_functions <- function(split){
   xgb_workflow <- workflow() %>%
     add_model(xgb_model) %>%
     add_recipe(recipe_results) %>%
-    fit(training(split))
+    fit(training(splits))
   
 }
 
 ##### 2 ELASTIC NET Function ####
 
-elastic_net_function <- function(split){
+elastic_net_function <- function(splits){
   
   # Recipe 
-  recipe_results <- ml_recipe(split)
+  recipe_results <- ml_recipe(splits)
   
   # Model Spec
   elastic_net_model <- linear_reg(penalty = 1.5) %>%
@@ -39,15 +39,15 @@ elastic_net_function <- function(split){
   elastic_net_workflow <- workflow() %>%
     add_model(elastic_net_model) %>%
     add_recipe(recipe_results) %>%
-    fit(training(split))
+    fit(training(splits))
 }
 
 ##### 3 MARS Function ####
 
-mars_function <- function(split){
+mars_function <- function(splits){
   
   # Recipe 
-  recipe_results <- ml_recipe(split)
+  recipe_results <- ml_recipe(splits)
   
   # Model Spec
   mars_model <- mars() %>%
@@ -58,7 +58,7 @@ mars_function <- function(split){
   mars_workflow <- workflow() %>%
     add_model(mars_model) %>%
     add_recipe(recipe_results) %>%
-    fit(training(split))
+    fit(training(splits))
 
 }
 
@@ -66,7 +66,7 @@ mars_function <- function(split){
 
 ##### 4 DeepAR Function ####
 
-deep_ar_function <- function(split){
+deep_ar_function <- function(splits){
   
   # Model Spec
   deep_ar_model <- deep_ar(
@@ -74,15 +74,17 @@ deep_ar_function <- function(split){
     freq               = "D",
     mode               = "regression",
     prediction_length  = 30,
+    lookback_length    = 30, 
     epochs             = 20,
     scale              = TRUE
     ) %>%
-    fit(close ~ .,data = training(split))
+    set_engine("gluonts_deepar") %>%
+    fit(close ~ .,data = training(splits))
   
 }
 
 ##### 5 Gaussian Process (GP) Forecaster ####
-gp_forecaster_function <- function(split){
+gp_forecaster_function <- function(splits){
   
   # GP Model
   gp_forecaster_model <- gp_forecaster(
@@ -90,10 +92,12 @@ gp_forecaster_function <- function(split){
     freq               = "D",
     mode               = "regression",
     prediction_length  = 30,
+    lookback_length    = 30, 
     epochs             = 20,
     scale              = TRUE  
   ) %>%
-    fit(close ~ .,data = training(split))
+    set_engine("gluonts_gp_forecaster") %>%
+    fit(close ~ .,data = training(splits))
   
 }
 
